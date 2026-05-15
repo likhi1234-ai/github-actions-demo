@@ -1,4 +1,4 @@
-name: My First CI Pipeline
+name: Advanced CI Pipeline
 
 on:
   push:
@@ -6,16 +6,14 @@ on:
       - main
 
 jobs:
-  test-job:
+
+  test:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Show Files
-        run: ls -la
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
@@ -28,5 +26,26 @@ jobs:
       - name: Run Tests
         run: npm test
 
-      - name: Success Message
-        run: echo "Pipeline completed successfully!"
+  build:
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: dist/
